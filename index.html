@@ -2,16 +2,22 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Excel Webbvy</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; }
-        iframe { width: 100%; height: 100%; border: none; }
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; font-family: sans-serif; }
+        iframe { width: 100%; height: 100vh; border: none; position: absolute; top: 0; left: 0; z-index: 2; }
+        .loading-text { padding: 20px; position: absolute; top: 0; left: 0; z-index: 1; }
     </style>
 </head>
 <body>
 
+    <div class="loading-text">
+        <p>Laddar...Tålamod... <a href="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AAK50&wdHideGridlines=True&wdInConfigurator=True&nav=1&action=embedview">Händer inget? Klickiklicki</a>.</p>
+    </div>
+
     <iframe 
-        src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=False&Item='START'!A1%3AAK50&wdHideGridlines=True&wdInConfigurator=True&nav=1&action=embedview" 
+        src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AAK50&wdHideGridlines=True&wdInConfigurator=True&nav=1&action=embedview" 
         sandbox="allow-scripts allow-same-origin allow-forms">
     </iframe>
 

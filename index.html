@@ -10,27 +10,36 @@
             padding: 0; 
             width: 100%; 
             height: 100%; 
-            overflow: auto; 
-            -webkit-overflow-scrolling: touch;
+            overflow: auto;
         }
-        .wrapper {
+  .wrapper {
+            position: relative;
             width: 100%;
             height: 100vh;
-            display: block;
+   }
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            background: rgba(255,255,255,0);
         }
         iframe { 
             width: 100%; 
             height: 100%; 
             border: none; 
-        }
+      }
     </style>
 </head>
 <body>
 
-    <div class="wrapper">
+  <div class="wrapper">
+        <div class="overlay"></div>
         <iframe 
-            src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='LIVE'!C4%3ACA97&wdHideGridlines=True&wdHideHeaders=True&wdInConfigurator=True&nav=1" 
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups">
+            src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=False&Item='START'!A1%3AAK50&wdHideGridlines=True&wdInConfigurator=True&nav=1&action=embedview" 
+            sandbox="allow-scripts allow-same-origin allow-forms">
         </iframe>
     </div>
 

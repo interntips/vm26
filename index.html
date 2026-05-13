@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Excel A:J Anpassad</title>
+    <title>Excel A:J Optimerad</title>
     <style>
         html, body {
             margin: 0;
@@ -22,21 +22,19 @@
             position: relative;
         }
 
-        /* Dator: Standardvy */
+        /* Behållaren för iFramen */
         #zoom-layer {
             transform-origin: 0 0;
             width: 100%;
             height: 100%;
+            transition: transform 0.1s ease-out;
         }
 
-        /* Mobil: Anpassa efter kolumn A-J (ca 550px) */
         @media (max-width: 768px) {
             #zoom-layer {
-                /* Vi sätter bredden till 850px för att ge lite marginal för kolumn J */
-                width: 550px; 
-                height: 1900px;
-                /* Dynamisk skalning: (Skärmbredd / 850) beräknas av JS för exakt passform */
-                transform: scale(0.45); 
+                /* Vi låser bredden till 600px för mobil för att täcka A-J */
+                width: 600px; 
+                height: 2500px;
             }
         }
 
@@ -65,8 +63,9 @@
     <div id="viewport">
         <div id="zoom-layer">
             <div id="touch-handler"></div>
+            <!-- Notera att Item nu är satt till A1:J95 i länken nedan -->
             <iframe 
-                src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AAB98&wdHideGridlines=True&nav=1&action=embedview"
+                src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AJ95&wdHideGridlines=True&nav=1&action=embedview"
                 sandbox="allow-scripts allow-same-origin allow-forms">
             </iframe>
         </div>
@@ -74,23 +73,24 @@
 
     <script>
         const zoomLayer = document.getElementById('zoom-layer');
-        const targetWidth = 850; // Bredden på kolumn A till J + marginal
+        // Denna måste vara samma som bredden i CSS (600px)
+        const targetWidth = 600; 
         
         function adjustZoom() {
             if (window.innerWidth <= 768) {
-                // Beräknar exakt skala så att A-J fyller skärmen
+                // Skalar om 600px till att matcha telefonens bredd (t.ex. 390px)
                 const newScale = window.innerWidth / targetWidth;
                 zoomLayer.style.transform = `scale(${newScale})`;
                 return newScale;
             }
             zoomLayer.style.transform = `scale(1)`;
+            zoomLayer.style.width = '100%';
             return 1;
         }
 
         let scale = adjustZoom();
         let startDist = 0;
 
-        // Uppdatera zoom om skärmen roteras
         window.addEventListener('resize', () => { scale = adjustZoom(); });
 
         document.addEventListener('touchmove', (e) => {

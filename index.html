@@ -17,12 +17,13 @@
         #viewport {
             width: 100%;
             height: 100%;
-            overflow: auto;
+            /* VIKTIGT: Hindrar horisontell scroll så man inte hamnar i det vita */
+            overflow-x: hidden; 
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             position: relative;
         }
 
-        /* Behållaren för iFramen */
         #zoom-layer {
             transform-origin: 0 0;
             width: 100%;
@@ -32,9 +33,9 @@
 
         @media (max-width: 768px) {
             #zoom-layer {
-                /* Vi låser bredden till 600px för mobil för att täcka A-J */
-                width: 550px; 
-                height: 1500px;
+                /* Justerad bredd för att passa kolumn A-J tajtare */
+                width: 535px; 
+                height: 1900px;
             }
         }
 
@@ -63,7 +64,6 @@
     <div id="viewport">
         <div id="zoom-layer">
             <div id="touch-handler"></div>
-            <!-- Notera att Item nu är satt till A1:J95 i länken nedan -->
             <iframe 
                 src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AJ95&wdHideGridlines=True&nav=1&action=embedview"
                 sandbox="allow-scripts allow-same-origin allow-forms">
@@ -73,12 +73,11 @@
 
     <script>
         const zoomLayer = document.getElementById('zoom-layer');
-        // Denna måste vara samma som bredden i CSS (550px)
-        const targetWidth = 550; 
+        // Matchar bredden i CSS för att fylla skärmen exakt
+        const targetWidth = 535; 
         
         function adjustZoom() {
             if (window.innerWidth <= 768) {
-                // Skalar om 600px till att matcha telefonens bredd (t.ex. 390px)
                 const newScale = window.innerWidth / targetWidth;
                 zoomLayer.style.transform = `scale(${newScale})`;
                 return newScale;

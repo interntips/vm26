@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Excel A:J Anpassad</title>
+    <title>Excel A:J - Optimerad Höjd</title>
     <style>
         html, body {
             margin: 0;
@@ -16,27 +16,25 @@
 
         #viewport {
             width: 100%;
-            height: 100%;
+            /* Gör att viewporten alltid fyller hela skärmens höjd */
+            height: 100vh; 
             overflow: auto;
             -webkit-overflow-scrolling: touch;
             position: relative;
         }
 
-        /* Dator: Standardvy */
         #zoom-layer {
             transform-origin: 0 0;
             width: 100%;
-            height: 100%;
+            /* Höjden anpassas för att rymma ca 100 rader i Excel */
+            height: 3000px; 
+            transition: transform 0.1s ease-out;
         }
 
-        /* Mobil: Anpassa efter kolumn A-J (ca 800px) */
         @media (max-width: 768px) {
             #zoom-layer {
-                /* Vi sätter bredden till 850px för att ge lite marginal för kolumn J */
-                width: 850px; 
-                height: 2500px;
-                /* Dynamisk skalning: (Skärmbredd / 850) beräknas av JS för exakt passform */
-                transform: scale(0.45); 
+                width: 850px; /* Bredden för A-J */
+                height: 4000px; /* Extra höjd på mobil för att tillåta lång scroll */
             }
         }
 
@@ -74,24 +72,24 @@
 
     <script>
         const zoomLayer = document.getElementById('zoom-layer');
-        const targetWidth = 550; // Bredden på kolumn A till J + marginal
+        const targetWidth = 850; 
         
-        function adjustZoom() {
+        function adjustLayout() {
             if (window.innerWidth <= 768) {
-                // Beräknar exakt skala så att A-J fyller skärmen
                 const newScale = window.innerWidth / targetWidth;
                 zoomLayer.style.transform = `scale(${newScale})`;
                 return newScale;
+            } else {
+                zoomLayer.style.transform = `scale(1)`;
+                zoomLayer.style.width = `100%`;
+                return 1;
             }
-            zoomLayer.style.transform = `scale(1)`;
-            return 1;
         }
 
-        let scale = adjustZoom();
+        let scale = adjustLayout();
         let startDist = 0;
 
-        // Uppdatera zoom om skärmen roteras
-        window.addEventListener('resize', () => { scale = adjustZoom(); });
+        window.addEventListener('resize', () => { scale = adjustLayout(); });
 
         document.addEventListener('touchmove', (e) => {
             if (e.touches.length === 2) {

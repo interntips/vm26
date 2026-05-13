@@ -2,74 +2,56 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Excel Webbvy</title>
     <style>
-        /* Grundlayout för att dölja sidans naturliga scroll */
+        /* Tillåt naturlig scroll på hela sidan */
         html, body {
             margin: 0;
             padding: 0;
-            height: 100%;
             width: 100%;
-            overflow: hidden;
-            background-color: #f3f2f1;
-        }
-
-        /* Behållaren som faktiskt scrollar */
-        .scroll-wrapper {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            height: auto;
+            overflow-x: hidden;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Innehållet som definierar hur långt man kan scrolla (2500px) */
-        .scroll-content {
-            height: 2500px;
+        /* Behållaren är precis så hög som iFramen */
+        .container {
             width: 100%;
+            height: 2500px;
             position: relative;
         }
 
-        /* iFramen fixeras i bakgrunden så den inte rör sig ur bild */
+        /* iFramen tar upp hela behållarens höjd */
         iframe {
-            position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
             border: none;
-            z-index: 1;
+            display: block;
         }
 
-        /* En transparent yta som ligger ovanpå Excel och tar emot fingerrörelser */
-        .touch-surface {
+        /* Om du behöver klicka i arket, ta bort eller kommentera ut denna overlay */
+        .click-shield {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 2;
             background: transparent;
-            pointer-events: all;
+            z-index: 5;
+            pointer-events: none; /* Ändra till 'all' om du vill prioritera scroll framför klick */
         }
     </style>
 </head>
 <body>
 
-    <!-- iFramen ligger fixerad underst -->
-    <iframe 
-        src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AAB98&wdHideGridlines=True&nav=1&action=embedview"
-        sandbox="allow-scripts allow-same-origin allow-forms">
-    </iframe>
-
-    <!-- Scroll-lagret som ligger överst -->
-    <div class="scroll-wrapper">
-        <div class="scroll-content">
-            <div class="touch-surface"></div>
-        </div>
+    <div class="container">
+        <div class="click-shield"></div>
+        <iframe 
+            src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AAB98&wdHideGridlines=True&nav=1&action=embedview"
+            sandbox="allow-scripts allow-same-origin allow-forms">
+        </iframe>
     </div>
 
 </body>

@@ -2,56 +2,51 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Excel Webbvy</title>
     <style>
-        /* Tillåt naturlig scroll på hela sidan */
         html, body {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: auto;
-            overflow-x: hidden;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden; /* Förhindrar dubbelscroll */
         }
 
-        /* Behållaren är precis så hög som iFramen */
-        .container {
+        /* Denna behållare är nyckeln för Android */
+        .outer-container {
             width: 100%;
-            height: 2500px;
+            height: 100%;
+            overflow-y: scroll; /* Tvingar vertikal scroll */
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y; /* Tillåter endast vertikal dragning */
+        }
+
+        .inner-content {
+            width: 100%;
+            height: 2500px; /* Samma höjd som ditt Excel-intervall */
             position: relative;
         }
 
-        /* iFramen tar upp hela behållarens höjd */
         iframe {
             width: 100%;
             height: 100%;
             border: none;
             display: block;
-        }
-
-        /* Om du behöver klicka i arket, ta bort eller kommentera ut denna overlay */
-        .click-shield {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: transparent;
-            z-index: 5;
-            pointer-events: none; /* Ändra till 'all' om du vill prioritera scroll framför klick */
+            pointer-events: auto; /* Tillåter interaktion med celler */
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="click-shield"></div>
-        <iframe 
-            src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AAB98&wdHideGridlines=True&nav=1&action=embedview"
-            sandbox="allow-scripts allow-same-origin allow-forms">
-        </iframe>
+    <div class="outer-container">
+        <div class="inner-content">
+            <iframe 
+                src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AAB98&wdHideGridlines=True&nav=1&action=embedview"
+                sandbox="allow-scripts allow-same-origin allow-forms">
+            </iframe>
+        </div>
     </div>
 
 </body>

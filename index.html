@@ -2,46 +2,62 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Excel Webbvy</title>
     <style>
-        html, body { 
-            margin: 0; 
-            padding: 0; 
-            width: 100%; 
-            height: 100%; 
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .scroll-container {
-            width: 100%;
+        html, body {
+            margin: 0;
+            padding: 0;
             height: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* Denna behållare tvingar fram scroll på Android */
+        .scroller {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow-y: scroll;
             -webkit-overflow-scrolling: touch;
         }
 
-        .wrapper {
+        .content-height {
+            height: 2500px;
+            width: 100%;
             position: relative;
-            width: 100%;
-            height: 2500px; /* Den faktiska höjden på arket */
         }
 
-        iframe { 
-            width: 100%; 
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
             height: 100%;
-            border: none; 
-            display: block;
+            border: none;
+        }
+
+        /* Overlay som släpper igenom touch men fångar gester */
+        .touch-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none; 
         }
     </style>
 </head>
 <body>
 
-    <div class="scroll-container">
-        <div class="wrapper">
+    <div class="scroller">
+        <div class="content-height">
+            <div class="touch-layer"></div>
             <iframe 
-                src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AAB98&wdHideGridlines=True&nav=1&action=embedview" 
+                src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AAB98&wdHideGridlines=True&nav=1&action=embedview"
                 sandbox="allow-scripts allow-same-origin allow-forms">
             </iframe>
         </div>

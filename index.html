@@ -1,22 +1,26 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Excel Webbvy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Excel Webbvy - Fit to Width</title>
     <style>
         html, body { 
             margin: 0; 
             padding: 0; 
             width: 100%; 
             height: 100%; 
-            overflow: hidden;
+            overflow-x: hidden;
         }
+
         .wrapper {
             position: relative;
             width: 100%;
             height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
+
         .overlay {
             position: absolute;
             top: 0;
@@ -26,24 +30,43 @@
             z-index: 10;
             background: rgba(255,255,255,0);
             pointer-events: none;
-            touch-action: auto;
         }
-        iframe { 
-            width: 100%; 
-            height: 100%; 
-            border: none; 
+
+        #excel-iframe { 
+            border: none;
+            transform-origin: 0 0;
+            width: 1250px; 
+            height: 2500px;
         }
     </style>
 </head>
 <body>
 
-    <div class="wrapper">
+    <div class="wrapper" id="container">
         <div class="overlay"></div>
         <iframe 
-            src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AAK100&wdHideGridlines=True&nav=1&action=embedview" 
+            id="excel-iframe"
+            src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AK98&wdHideGridlines=True&nav=1&action=embedview" 
             sandbox="allow-scripts allow-same-origin allow-forms">
         </iframe>
     </div>
 
+    <script>
+        function fitToWidth() {
+            const container = document.getElementById('container');
+            const iframe = document.getElementById('excel-iframe');
+            if (!container || !iframe) return;
+
+            const scale = container.offsetWidth / iframe.offsetWidth;
+            
+            iframe.style.transform = `scale(${scale})`;
+            container.style.height = (iframe.offsetHeight * scale) + "px";
+        }
+
+        window.addEventListener('resize', fitToWidth);
+        window.addEventListener('load', fitToWidth);
+        setTimeout(fitToWidth, 500);
+        setTimeout(fitToWidth, 2000);
+    </script>
 </body>
 </html>

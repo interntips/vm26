@@ -2,31 +2,31 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Excel Webbvy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Excel Webbvy med Nyp-zoom</title>
     <style>
         html, body {
             margin: 0;
             padding: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden; /* Förhindrar dubbelscroll */
-        }
-
-        /* Denna behållare är nyckeln för Android */
-        .outer-container {
             width: 100%;
             height: 100%;
-            overflow-y: scroll; /* Tvingar vertikal scroll */
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            touch-action: pan-y; /* Tillåter endast vertikal dragning */
+            overflow: hidden; /* Vi hanterar scrollen internt för zoomens skull */
+            background: #f3f2f1;
         }
 
-        .inner-content {
+        #viewport {
             width: 100%;
-            height: 2500px; /* Samma höjd som ditt Excel-intervall */
+            height: 100%;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
             position: relative;
+        }
+
+        #zoom-layer {
+            transform-origin: 0 0;
+            width: 100%;
+            height: 2500px; /* Din ursprungshöjd */
+            transition: transform 0.1s ease-out;
         }
 
         iframe {
@@ -34,14 +34,24 @@
             height: 100%;
             border: none;
             display: block;
-            pointer-events: auto; /* Tillåter interaktion med celler */
+            pointer-events: none; /* Gör att vi kan fånga nyp-gester på lagret ovanpå */
+        }
+
+        #touch-handler {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
         }
     </style>
 </head>
 <body>
 
-    <div class="outer-container">
-        <div class="inner-content">
+    <div id="viewport">
+        <div id="zoom-layer">
+            <div id="touch-handler"></div>
             <iframe 
                 src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AAB98&wdHideGridlines=True&nav=1&action=embedview"
                 sandbox="allow-scripts allow-same-origin allow-forms">
@@ -49,5 +59,33 @@
         </div>
     </div>
 
+    <script>
+        const zoomLayer = document.getElementById('zoom-layer');
+        let scale = 0.6; // Startzoom
+        let startDist = 0;
+
+        document.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault(); // Hindra webbläsarens egen zoom
+                const dist = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+
+                if (startDist === 0) {
+                    startDist = dist;
+                } else {
+                    const delta = dist / startDist;
+                    scale = Math.min(Math.max(0.3, scale * delta), 2); // Begränsa zoom mellan 0.3 och 2
+                    zoomLayer.style.transform = `scale(${scale})`;
+                    startDist = dist;
+                }
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchend', () => {
+            startDist = 0;
+        });
+    </script>
 </body>
 </html>

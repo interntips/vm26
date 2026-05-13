@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Excel A:J - Optimerad Höjd</title>
+    <title>Excel A:J Anpassad</title>
     <style>
         html, body {
             margin: 0;
@@ -16,25 +16,27 @@
 
         #viewport {
             width: 100%;
-            /* Gör att viewporten alltid fyller hela skärmens höjd */
-            height: 100vh; 
+            height: 100%;
             overflow: auto;
             -webkit-overflow-scrolling: touch;
             position: relative;
         }
 
+        /* Dator: Standardvy */
         #zoom-layer {
             transform-origin: 0 0;
             width: 100%;
-            /* Höjden anpassas för att rymma ca 100 rader i Excel */
-            height: 3000px; 
+            height: 100%;
             transition: transform 0.1s ease-out;
         }
 
+        /* Mobil: Anpassa efter kolumn A-J (ca 850px) */
         @media (max-width: 768px) {
             #zoom-layer {
-                width: 850px; /* Bredden för A-J */
-                height: 4000px; /* Extra höjd på mobil för att tillåta lång scroll */
+                width: 550px; 
+                height: 200px;
+                /* Startskalning beräknas av JS för att passa skärmen */
+                transform: scale(0.45); 
             }
         }
 
@@ -64,7 +66,7 @@
         <div id="zoom-layer">
             <div id="touch-handler"></div>
             <iframe 
-                src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AAB98&wdHideGridlines=True&nav=1&action=embedview"
+                src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AAB98&wdHideGridlines=True&nav=1&action=embedview" 
                 sandbox="allow-scripts allow-same-origin allow-forms">
             </iframe>
         </div>
@@ -72,24 +74,25 @@
 
     <script>
         const zoomLayer = document.getElementById('zoom-layer');
-        const targetWidth = 850; 
+        const targetWidth = 850; // Bredden på kolumn A till J + marginal
         
-        function adjustLayout() {
+        function adjustZoom() {
             if (window.innerWidth <= 768) {
+                // Beräknar exakt skala så att A-J fyller mobilens bredd
                 const newScale = window.innerWidth / targetWidth;
                 zoomLayer.style.transform = `scale(${newScale})`;
                 return newScale;
-            } else {
-                zoomLayer.style.transform = `scale(1)`;
-                zoomLayer.style.width = `100%`;
-                return 1;
             }
+            // Återställ för dator
+            zoomLayer.style.transform = `scale(1)`;
+            return 1;
         }
 
-        let scale = adjustLayout();
+        let scale = adjustZoom();
         let startDist = 0;
 
-        window.addEventListener('resize', () => { scale = adjustLayout(); });
+        // Justera zoom vid rotation eller ändrad fönsterstorlek
+        window.addEventListener('resize', () => { scale = adjustZoom(); });
 
         document.addEventListener('touchmove', (e) => {
             if (e.touches.length === 2) {

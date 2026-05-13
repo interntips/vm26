@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Excel A:J Optimerad</title>
+    <title>Excel A1:J95 Fast Ram</title>
     <style>
         html, body {
             margin: 0;
@@ -17,7 +17,8 @@
         #viewport {
             width: 100%;
             height: 100%;
-            /* VIKTIGT: Hindrar horisontell scroll så man inte hamnar i det vita */
+            /* overflow-x: hidden stoppar vitt fält till höger */
+            /* overflow-y: auto tillåter scroll ner till lagrets slut, sen tar det stopp */
             overflow-x: hidden; 
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
@@ -33,9 +34,11 @@
 
         @media (max-width: 768px) {
             #zoom-layer {
-                /* Justerad bredd för att passa kolumn A-J tajtare */
                 width: 535px; 
-                height: 1900px;
+                /* Justerad höjd: 1850px brukar räcka för ca 95 rader. 
+                   Minska detta värde om du fortfarande kan scrolla för långt ner. */
+                height: 1850px; 
+                overflow: hidden;
             }
         }
 
@@ -73,7 +76,6 @@
 
     <script>
         const zoomLayer = document.getElementById('zoom-layer');
-        // Matchar bredden i CSS för att fylla skärmen exakt
         const targetWidth = 535; 
         
         function adjustZoom() {

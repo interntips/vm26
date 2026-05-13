@@ -2,64 +2,73 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Excel Webbvy</title>
     <style>
+        /* Grundlayout för att dölja sidans naturliga scroll */
         html, body {
             margin: 0;
             padding: 0;
             height: 100%;
             width: 100%;
             overflow: hidden;
+            background-color: #f3f2f1;
         }
 
-        /* Denna behållare tvingar fram scroll på Android */
-        .scroller {
+        /* Behållaren som faktiskt scrollar */
+        .scroll-wrapper {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            overflow-y: scroll;
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
 
-        .content-height {
+        /* Innehållet som definierar hur långt man kan scrolla (2500px) */
+        .scroll-content {
             height: 2500px;
             width: 100%;
             position: relative;
         }
 
+        /* iFramen fixeras i bakgrunden så den inte rör sig ur bild */
         iframe {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             border: none;
+            z-index: 1;
         }
 
-        /* Overlay som släpper igenom touch men fångar gester */
-        .touch-layer {
+        /* En transparent yta som ligger ovanpå Excel och tar emot fingerrörelser */
+        .touch-surface {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
-            pointer-events: none; 
+            z-index: 2;
+            background: transparent;
+            pointer-events: all;
         }
     </style>
 </head>
 <body>
 
-    <div class="scroller">
-        <div class="content-height">
-            <div class="touch-layer"></div>
-            <iframe 
-                src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AAB98&wdHideGridlines=True&nav=1&action=embedview"
-                sandbox="allow-scripts allow-same-origin allow-forms">
-            </iframe>
+    <!-- iFramen ligger fixerad underst -->
+    <iframe 
+        src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AAB98&wdHideGridlines=True&nav=1&action=embedview"
+        sandbox="allow-scripts allow-same-origin allow-forms">
+    </iframe>
+
+    <!-- Scroll-lagret som ligger överst -->
+    <div class="scroll-wrapper">
+        <div class="scroll-content">
+            <div class="touch-surface"></div>
         </div>
     </div>
 

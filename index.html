@@ -77,51 +77,103 @@
         </div>
     </div>
 
-    <script>
-        const zoomLayer = document.getElementById('zoom-layer');
-        const targetWidth = 535; 
-        
-        function adjustZoom() {
-            if (window.innerWidth <= 768) {
-                const newScale = window.innerWidth / targetWidth;
-                zoomLayer.style.transform = `scale(${newScale})`;
-                return newScale;
-            }
-            // På dator: Rensa alla omräkningar helt
-            zoomLayer.style.transform = 'none';
-            zoomLayer.style.width = '100%';
-            zoomLayer.style.height = '100%';
-            return 1;
+<script>
+    const zoomLayer = document.getElementById('zoom-layer');
+    const targetWidth = 535; 
+    
+    let scale = 1;
+    let startDist = 0;
+    let posX = 0;
+    let posY = 0;
+    let startX = 0;
+    let startY = 0;
+    let isPanning = false;
+
+    function adjustZoom() {
+        if (window.innerWidth <= 768) {
+            scale = window.innerWidth / targetWidth;
+            posX = 0;
+            posY = 0;
+            updateTransform();
+            return scale;
         }
+        zoomLayer.style.transform = 'none';
+        zoomLayer.style.width = '100%';
+        zoomLayer.style.height = '100%';
+        return 1;
+    }
 
-        let scale = adjustZoom();
-        let startDist = 0;
+    function updateTransform() {
+        zoomLayer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+    }
 
-        window.addEventListener('resize', () => { scale = adjustZoom(); });
+    window.addEventListener('resize', () => { adjustZoom(); });
 
-        // Touch-logik (Körs bara om det faktiskt är en mobil/touch-skärm)
-        document.addEventListener('touchmove', (e) => {
-            if (window.innerWidth <= 768 && e.touches.length === 2) {
-                e.preventDefault();
-                const dist = Math.hypot(
-                    e.touches[0].pageX - e.touches[1].pageX,
-                    e.touches[0].pageY - e.touches[1].pageY
-                );
+    document.addEventListener('touchstart', (e) => {
+        if (window.innerWidth > 768) return;
 
-                if (startDist === 0) {
-                    startDist = dist;
-                } else {
-                    const delta = dist / startDist;
-                    scale = Math.min(Math.max(0.1, scale * delta), 1.5);
-                    zoomLayer.style.transform = `scale(${scale})`;
-                    startDist = dist;
-                }
+        if (e.touches.length === 1) {
+            isPanning = true;
+            startX = e.touches[0].pageX - posX;
+            startY = e.touches[0].pageY - posY;
+        } else if (e.touches.length === 2) {
+            isPanning = false;
+            startDist = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+            );
+        }
+    });
+
+    document.addEventListener('touchmove', (e) => {
+        if (window.innerWidth > 768) return;
+        e.preventDefault(); 
+
+        if (isPanning && e.touches.length === 1) {
+            posX = e.touches[0].pageX - startX;
+            posY = e.touches[0].pageY - startY;
+            
+            // NYA/LÄTTARE GRÄNSER:
+            // Tillåt friare panorering i sidled (X-led) så fort man rör fingret
+            const minPanX = window.innerWidth - (targetWidth * scale);
+            // Om arket är utzoomat, centrera eller lås till 0. Om inzoomat, tillåt panorering.
+            if (minPanX < 0) {
+                posX = Math.min(100, Math.max(minPanX - 100, posX)); // Ger 100px extra "elastisk" marginal på sidorna
+            } else {
+                posX = 0; // Lås till mitten/vänster om allt får plats
             }
-        }, { passive: false });
+            
+            // Höjdgräns (Y-led) - Behåller spärren så man inte tappar bort botten
+            const minPanY = window.innerHeight - (1850 * scale);
+            posY = Math.min(0, Math.max(minPanY, posY));
 
-        document.addEventListener('touchend', () => {
-            startDist = 0;
-        });
-    </script>
+            updateTransform();
+        } else if (e.touches.length === 2) {
+            const dist = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+            );
+
+            if (startDist !== 0) {
+                const delta = dist / startDist;
+                const oldScale = scale;
+                scale = Math.min(Math.max(window.innerWidth / targetWidth, scale * delta), 2.5); // Ökat max-zoom till 2.5
+                
+                posX = posX * (scale / oldScale);
+                posY = posY * (scale / oldScale);
+                
+                updateTransform();
+                startDist = dist;
+            }
+        }
+    }, { passive: false });
+
+    document.addEventListener('touchend', () => {
+        startDist = 0;
+        isPanning = false;
+    });
+
+    adjustZoom();
+</script>
 </body>
 </html>

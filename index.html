@@ -17,41 +17,38 @@
         #viewport {
             width: 100%;
             height: 100%;
-            overflow: hidden; /* Datorn sköter scrollen inuti iFramen nu */
+            overflow: hidden;
             position: relative;
         }
 
-        /* Behållaren för iFramen */
         #zoom-layer {
             transform-origin: 0 0;
             width: 100%;
             height: 100%;
+            overflow: hidden; 
         }
 
-        /* Mobilinställningar (Skärmar under 768px) */
         @media (max-width: 768px) {
-            #viewport {
-                overflow-x: hidden; 
-                overflow-y: auto; /* Aktiverar mobilens fasta scroll */
-            }
             #zoom-layer {
                 width: 535px; 
-                height: 1870px; /* Din intrimmade mobilhöjd */
+                height: 1850px; 
                 overflow: hidden;
-                transition: transform 0.1s ease-out;
             }
         }
 
         iframe {
             width: 100%;
-            height: 100%;
+            height: calc(100% + 40px); 
+            margin-bottom: -40px;      
             border: none;
             display: block;
+            opacity: 0; /* Dold under laddning */
+            transition: opacity 0.3s ease-in;
         }
 
         @media (max-width: 768px) {
             iframe { 
-                pointer-events: none; /* Blockera Excel-touch på mobil för att tillåta nyp-zoom */
+                pointer-events: none;
             }
             #touch-handler {
                 position: absolute;
@@ -62,118 +59,159 @@
                 z-index: 10;
             }
         }
+
+        /* STIL FÖR LADDNINGSSNURRAN */
+        .loader-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: sans-serif;
+            color: #333;
+            z-index: 5;
+            transition: opacity 0.3s ease;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border-left-color: #107c41; /* Excel-grön */
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
 
     <div id="viewport">
+        <div class="loader-container" id="loader">
+            <div class="spinner"></div>
+            <div>Beräknar aktuell tabell...</div>
+        </div>
+
         <div id="zoom-layer">
             <div id="touch-handler"></div>
-            <!-- Vi tog bort &wdInScene=1 eftersom den förstorade sönder datorvyn -->
             <iframe 
-                src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AJ96&wdHideGridlines=True&nav=0&action=embedview"
-                sandbox="allow-scripts allow-same-origin allow-forms">
+                id="excel-iframe"
+                src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AJ96&wdHideGridlines=True&nav=1&wdHideHeaders=True&action=embedview"
+                sandbox="allow-scripts allow-same-origin allow-forms"
+                onload="iframeLoaded()">
             </iframe>
         </div>
     </div>
 
-<script>
-    const zoomLayer = document.getElementById('zoom-layer');
-    const targetWidth = 535; 
-    
-    let scale = 1;
-    let startDist = 0;
-    let posX = 0;
-    let posY = 0;
-    let startX = 0;
-    let startY = 0;
-    let isPanning = false;
-
-    function adjustZoom() {
-        if (window.innerWidth <= 768) {
-            scale = window.innerWidth / targetWidth;
-            posX = 0;
-            posY = 0;
-            updateTransform();
-            return scale;
+    <script>
+        // Funktion som döljer laddaren och visar iFramen när allt är klart
+        function iframeLoaded() {
+            document.getElementById('loader').style.opacity = '0';
+            document.getElementById('excel-iframe').style.opacity = '1';
+            setTimeout(() => {
+                document.getElementById('loader').style.display = 'none';
+            }, 300);
         }
-        zoomLayer.style.transform = 'none';
-        zoomLayer.style.width = '100%';
-        zoomLayer.style.height = '100%';
-        return 1;
-    }
 
-    function updateTransform() {
-        zoomLayer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
-    }
+        const zoomLayer = document.getElementById('zoom-layer');
+        const targetWidth = 535; 
+        
+        let scale = 1;
+        let startDist = 0;
+        let posX = 0;
+        let posY = 0;
+        let startX = 0;
+        let startY = 0;
+        let isPanning = false;
 
-    window.addEventListener('resize', () => { adjustZoom(); });
-
-    document.addEventListener('touchstart', (e) => {
-        if (window.innerWidth > 768) return;
-
-        if (e.touches.length === 1) {
-            isPanning = true;
-            startX = e.touches[0].pageX - posX;
-            startY = e.touches[0].pageY - posY;
-        } else if (e.touches.length === 2) {
-            isPanning = false;
-            startDist = Math.hypot(
-                e.touches[0].pageX - e.touches[1].pageX,
-                e.touches[0].pageY - e.touches[1].pageY
-            );
-        }
-    });
-
-    document.addEventListener('touchmove', (e) => {
-        if (window.innerWidth > 768) return;
-        e.preventDefault(); 
-
-        if (isPanning && e.touches.length === 1) {
-            posX = e.touches[0].pageX - startX;
-            posY = e.touches[0].pageY - startY;
-            
-            // NYA/LÄTTARE GRÄNSER:
-            // Tillåt friare panorering i sidled (X-led) så fort man rör fingret
-            const minPanX = window.innerWidth - (targetWidth * scale);
-            // Om arket är utzoomat, centrera eller lås till 0. Om inzoomat, tillåt panorering.
-            if (minPanX < 0) {
-                posX = Math.min(100, Math.max(minPanX - 100, posX)); // Ger 100px extra "elastisk" marginal på sidorna
-            } else {
-                posX = 0; // Lås till mitten/vänster om allt får plats
-            }
-            
-            // Höjdgräns (Y-led) - Behåller spärren så man inte tappar bort botten
-            const minPanY = window.innerHeight - (1850 * scale);
-            posY = Math.min(0, Math.max(minPanY, posY));
-
-            updateTransform();
-        } else if (e.touches.length === 2) {
-            const dist = Math.hypot(
-                e.touches[0].pageX - e.touches[1].pageX,
-                e.touches[0].pageY - e.touches[1].pageY
-            );
-
-            if (startDist !== 0) {
-                const delta = dist / startDist;
-                const oldScale = scale;
-                scale = Math.min(Math.max(window.innerWidth / targetWidth, scale * delta), 2.5); // Ökat max-zoom till 2.5
-                
-                posX = posX * (scale / oldScale);
-                posY = posY * (scale / oldScale);
-                
+        function adjustZoom() {
+            if (window.innerWidth <= 768) {
+                scale = window.innerWidth / targetWidth;
+                posX = 0;
+                posY = 0;
                 updateTransform();
-                startDist = dist;
+                return scale;
             }
+            zoomLayer.style.transform = 'none';
+            zoomLayer.style.width = '100%';
+            zoomLayer.style.height = '100%';
+            return 1;
         }
-    }, { passive: false });
 
-    document.addEventListener('touchend', () => {
-        startDist = 0;
-        isPanning = false;
-    });
+        function updateTransform() {
+            zoomLayer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+        }
 
-    adjustZoom();
-</script>
+        window.addEventListener('resize', () => { adjustZoom(); });
+
+        document.addEventListener('touchstart', (e) => {
+            if (window.innerWidth > 768) return;
+
+            if (e.touches.length === 1) {
+                isPanning = true;
+                startX = e.touches[0].pageX - posX;
+                startY = e.touches[0].pageY - posY;
+            } else if (e.touches.length === 2) {
+                isPanning = false;
+                startDist = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+            }
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (window.innerWidth > 768) return;
+            e.preventDefault(); 
+
+            if (isPanning && e.touches.length === 1) {
+                posX = e.touches[0].pageX - startX;
+                posY = e.touches[0].pageY - startY;
+                
+                const minPanX = window.innerWidth - (targetWidth * scale);
+                if (minPanX < 0) {
+                    posX = Math.min(100, Math.max(minPanX - 100, posX)); 
+                } else {
+                    posX = 0; 
+                }
+                
+                const minPanY = window.innerHeight - (1850 * scale);
+                posY = Math.min(0, Math.max(minPanY, posY));
+
+                updateTransform();
+            } else if (e.touches.length === 2) {
+                const dist = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+
+                if (startDist !== 0) {
+                    const delta = dist / startDist;
+                    const oldScale = scale;
+                    scale = Math.min(Math.max(window.innerWidth / targetWidth, scale * delta), 2.5); 
+                    
+                    posX = posX * (scale / oldScale);
+                    posY = posY * (scale / oldScale);
+                    
+                    updateTransform();
+                    startDist = dist;
+                }
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchend', () => {
+            startDist = 0;
+            isPanning = false;
+        });
+
+        adjustZoom();
+    </script>
 </body>
 </html>

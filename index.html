@@ -36,12 +36,12 @@
         /* DATOR-INSTÄLLNINGAR (Skärmar över 768px) */
         @media (min-width: 769px) {
             #zoom-layer {
-                width: 620px !important;       
-                height: 2200px !important;     
+                width: 520px !important;       /* Justerad från 620px för att ta bort vit högerkant */
+                height: 2060px !important;     /* Justerad från 2200px för att ta bort vit botten */
                 margin-top: 30px !important;   
                 margin-bottom: 30px !important;
-                overflow: hidden !important; /* Klipper bort excels interna vita yta */
-                box-shadow: 0 4px 25px rgba(0,0,0,0.15) !important; 
+                overflow: hidden !important;   /* Klipper bort excels interna vita yta */
+                box-shadow: none !important;   /* SKUGGAN BORTTAGEN HÄR */
             }
         }
 

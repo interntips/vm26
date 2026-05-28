@@ -36,21 +36,21 @@
         /* DATOR-INSTÄLLNINGAR (Skärmar över 768px) */
 @media (min-width: 769px) {
     #zoom-layer {
-        width: 550px !important;       /* Detta är den synliga bredden på din skärm */
-        height: 1850px !important;     /* Detta är den synliga höjden på din skärm */
+        width: 550px !important;       /* Den fasta bredden du vill se */
+        height: 1850px !important;     /* Den fasta höjden du vill se */
         margin-top: 30px !important;   
         margin-bottom: 30px !important;
-        overflow: hidden !important;   /* Detta klipper bort allt som sticker ut! */
+        overflow: hidden !important;   /* Klipper bort allt som sticker ut */
         box-shadow: none !important;   
         position: relative !important;
     }
     
-    /* Här sker trolleriet med iFramen specifikt på datorn */
-    #excel-iframe {
-        width: 590px !important;       /* Gör iFramen 40px BREDARE än titthålet */
-        height: 1950px !important;     /* Gör iFramen 100px HÖGRE än titthålet */
-        margin-left: 0 !important;      
-        margin-top: 0 !important;
+    /* Denna specifika regel tvingar iFramen att bli mycket större än rutan */
+    html body #viewport #zoom-layer #excel-iframe {
+        width: 600px !important;        /* Trycker ut högerkanten (och scrollisten) 50px utanför rutan */
+        height: 1950px !important;      /* Trycker ner botten (och scrollisten) 100px utanför rutan */
+        max-width: none !important;
+        min-width: none !important;
     }
 }
 

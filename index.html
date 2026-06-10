@@ -2,250 +2,225 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.00, user-scalable=yes">
     <title>Fotbolls-VM 2026 - Interntips</title>
     <style>
-        /* Tvingar hela sidan att ha din ljusgråa färg */
         html, body {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            overflow: auto !important; 
-            background-color: #404040 !important; 
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            background-color: #404040;
         }
-
-        /* Den yttre behållaren som centrerar allt på datorn */
-        #viewport {
-            width: 100% !important;
-            min-height: 100vh !important;
-            position: relative !important;
-            background-color: #404040 !important;
-            display: flex !important;
-            justify-content: center !important; 
-            align-items: flex-start !important;
+        .wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            background-color: #404040;
         }
-
-        /* Den inre behållaren runt Excel-arket */
-        #zoom-layer {
-            transform-origin: 0 0;
-            background-color: #404040 !important;
-            box-sizing: border-box;
+        .iframe-scaler {
+            width: 1600px;
+            height: 2366px;
+            transform-origin: top center;
+            position: relative;
+            flex-shrink: 0;
         }
-
-        /* DATOR-INSTÄLLNINGAR (Skärmar över 768px) */
-@media (min-width: 769px) {
-    #zoom-layer {
-        width: 550px !important;       /* Den fasta bredden du vill se */
-        height: 1850px !important;     /* Den fasta höjden du vill se */
-        margin-top: 30px !important;   
-        margin-bottom: 30px !important;
-        overflow: hidden !important;   /* Klipper bort allt som sticker ut */
-        box-shadow: none !important;   
-        position: relative !important;
-    }
-    
-    /* Denna specifika regel tvingar iFramen att bli mycket större än rutan */
-    html body #viewport #zoom-layer #excel-iframe {
-        width: 600px !important;        /* Trycker ut högerkanten (och scrollisten) 50px utanför rutan */
-        height: 1950px !important;      /* Trycker ner botten (och scrollisten) 100px utanför rutan */
-        max-width: none !important;
-        min-width: none !important;
-    }
-}
-
-        /* MOBIL-INSTÄLLNINGAR (Skärmar under 768px) */
-        @media (max-width: 768px) {
-            html, body { overflow: hidden !important; }
-            #viewport { display: block !important; }
-            #zoom-layer {
-                width: 540px !important; 
-                height: 1850px !important; 
-                overflow: hidden !important;
-                margin: 0 !important;
-            }
-        }
-
-        /* iFramen blir 40px högre och trycks ner för att dölja menyraden */
         iframe {
-            width: 100% !important;
-            height: calc(100% + 40px) !important; 
-            margin-bottom: -40px !important;      
-            border: none !important;
-            display: block !important;
-            opacity: 0; 
-            transition: opacity 0.3s ease-in;
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            clip-path: inset(4px 39px 120px 3px);
         }
-
-        @media (max-width: 768px) {
-            iframe { 
-                pointer-events: none !important;
-            }
-            #touch-handler {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                z-index: 10;
-            }
-        }
-
-        /* LADDNINGSSNURRA */
-        .loader-container {
+        .touch-shield {
             position: absolute;
-            top: 300px; 
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            background: transparent;
+            display: none;
+        }
+        .loader-container {
+            position: fixed;
+            top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             display: flex;
             flex-direction: column;
             align-items: center;
             font-family: sans-serif;
-            color: #00b0f0; 
-            z-index: 5;
+            color: #00b0f0;
+            z-index: 100;
             transition: opacity 0.3s ease;
         }
-
-        @media (max-width: 768px) {
-            .loader-container {
-                top: 50vh;
-            }
-        }
-
         .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
+            border: 4px solid rgba(255, 255, 255, 0.1);
             width: 42px;
             height: 42px;
             border-radius: 50%;
-            border-left-color: #00b0f0; 
+            border-left-color: #00b0f0;
             animation: spin 1s linear infinite;
             margin-bottom: 10px;
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: transparent;
+            z-index: 200;
+        }
+        .info-box {
+            background-color: #404040;
+            border: 1px solid #00b0f0;
+            color: #ffc000;
+            font-family: sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            padding: 24px;
+            width: 60%;
+            box-sizing: border-box;
+            border-radius: 4px;
+            text-align: center;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 201;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+        }
+        .close-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 8px 24px;
+            background-color: transparent;
+            border: 1px solid #00b0f0;
+            color: #00b0f0;
+            font-family: sans-serif;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .close-btn:hover {
+            background-color: #00b0f0;
+            color: #404040;
+        }
     </style>
 </head>
 <body>
+    <div class="loader-container" id="loader">
+        <div class="spinner"></div>
+        <div>Hämtar statistik...</div>
+    </div>
 
-    <div id="viewport">
-        <div class="loader-container" id="loader">
-            <div class="spinner"></div>
-            <div>Laddar VM-tipset...</div>
-        </div>
+    <div class="overlay" id="overlay"></div>
+    <div class="info-box" id="infoBox">
+        Välkommen till interntipset för fotbolls-vm 2026. Här kan du följa din ranking i tipset. Det är 81 deltagare. Deltagare 82 utgör ett snitt av samtliga deltagares tips, och är markerad med röd färg. Leta upp din tipsrad, om den avviker från din inlämnade rad skicka ett sms till 0701749123. Lycka till.
+        <br>
+        <button class="close-btn" id="closeBtn">Stäng</button>
+    </div>
 
-        <div id="zoom-layer">
-            <div id="touch-handler"></div>
-            <iframe 
+    <div class="wrapper" id="wrapper">
+        <div class="iframe-scaler" id="scaler">
+            <div class="touch-shield" id="shield"></div>
+            <iframe
                 id="excel-iframe"
-                src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='START'!A1%3AK100&wdHideGridlines=True&nav=1&wdHideHeaders=True&action=embedview"
-                sandbox="allow-scripts allow-same-origin allow-forms"
-                onload="iframeLoaded()">
+                src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='LIVE'!B3%3ACB116&wdHideGridlines=True&wdHideHeaders=True&wdInConfigurator=True&nav=1"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups">
             </iframe>
         </div>
     </div>
-
     <script>
-        function iframeLoaded() {
-            document.getElementById('loader').style.opacity = '0';
-            document.getElementById('excel-iframe').style.opacity = '1';
+        const IFRAME_W = 1600;
+        const IFRAME_H = 2366;
+        const DESKTOP_BREAKPOINT = 1280;
+        const scaler   = document.getElementById('scaler');
+        const wrapper  = document.getElementById('wrapper');
+        const shield   = document.getElementById('shield');
+        const iframe   = document.getElementById('excel-iframe');
+        const loader   = document.getElementById('loader');
+        const overlay  = document.getElementById('overlay');
+        const infoBox  = document.getElementById('infoBox');
+        const closeBtn = document.getElementById('closeBtn');
+
+        iframe.addEventListener('load', () => {
             setTimeout(() => {
-                document.getElementById('loader').style.display = 'none';
+                loader.style.opacity = '0';
+                setTimeout(() => { loader.style.display = 'none'; }, 300);
+            }, 3000);
+        });
+
+        function closeOverlay() {
+            overlay.style.transition = 'opacity 0.3s ease';
+            overlay.style.opacity = '0';
+            infoBox.style.transition = 'opacity 0.3s ease';
+            infoBox.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                infoBox.style.display = 'none';
             }, 300);
         }
 
-        const zoomLayer = document.getElementById('zoom-layer');
-        const targetWidth = 535; 
-        
-        let scale = 1;
-        let startDist = 0;
-        let posX = 0;
-        let posY = 0;
-        let startX = 0;
-        let startY = 0;
-        let isPanning = false;
+        overlay.addEventListener('click', closeOverlay);
 
-        function adjustZoom() {
-            if (window.innerWidth <= 768) {
-                scale = window.innerWidth / targetWidth;
-                posX = 0;
-                posY = 0;
-                updateTransform();
-                return scale;
-            }
-            zoomLayer.style.transform = 'none';
-            return 1;
-        }
-
-        function updateTransform() {
-            zoomLayer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
-        }
-
-        window.addEventListener('resize', () => { adjustZoom(); });
-
-        document.addEventListener('touchstart', (e) => {
-            if (window.innerWidth > 768) return;
-
-            if (e.touches.length === 1) {
-                isPanning = true;
-                startX = e.touches[0].pageX - posX;
-                startY = e.touches[0].pageY - posY;
-            } else if (e.touches.length === 2) {
-                isPanning = false;
-                startDist = Math.hypot(
-                    e.touches[0].pageX - e.touches[1].pageX,
-                    e.touches[0].pageY - e.touches[1].pageY
-                );
-            }
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeOverlay();
         });
 
-        document.addEventListener('touchmove', (e) => {
-            if (window.innerWidth > 768) return;
-            e.preventDefault(); 
-
-            if (isPanning && e.touches.length === 1) {
-                posX = e.touches[0].pageX - startX;
-                posY = e.touches[0].pageY - startY;
-                
-                const minPanX = window.innerWidth - (targetWidth * scale);
-                if (minPanX < 0) {
-                    posX = Math.min(100, Math.max(minPanX - 100, posX)); 
-                } else {
-                    posX = 0; 
-                }
-                
-                const minPanY = window.innerHeight - (1850 * scale);
-                posY = Math.min(0, Math.max(minPanY, posY));
-
-                updateTransform();
-            } else if (e.touches.length === 2) {
-                const dist = Math.hypot(
-                    e.touches[0].pageX - e.touches[1].pageX,
-                    e.touches[0].pageY - e.touches[1].pageY
-                );
-
-                if (startDist !== 0) {
-                    const delta = dist / startDist;
-                    const oldScale = scale;
-                    scale = Math.min(Math.max(window.innerWidth / targetWidth, scale * delta), 2.5); 
-                    
-                    posX = posX * (scale / oldScale);
-                    posY = posY * (scale / oldScale);
-                    
-                    updateTransform();
-                    startDist = dist;
-                }
+        function applyScale() {
+            const vw = document.documentElement.clientWidth;
+            if (vw >= DESKTOP_BREAKPOINT) {
+                scaler.style.width = '1600px';
+                scaler.style.height = '2366px';
+                const scale = Math.min(1, vw / IFRAME_W);
+                scaler.style.transform = `scale(${scale})`;
+                wrapper.style.height = (IFRAME_H * scale) + 'px';
+                wrapper.style.justifyContent = 'center';
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.style.clipPath = 'inset(4px 34px 360px 3px)';
+            } else {
+                scaler.style.width = '100vw';
+                scaler.style.height = 'calc(100vh + 140px)';
+                scaler.style.transform = 'none';
+                wrapper.style.height = 'calc(100vh + 140px)';
+                wrapper.style.justifyContent = 'flex-start';
+                iframe.style.width = '100vw';
+                iframe.style.height = 'calc(100vh + 140px)';
+                iframe.style.clipPath = 'none';
             }
-        }, { passive: false });
+        }
+        applyScale();
+        window.addEventListener('resize', applyScale);
 
-        document.addEventListener('touchend', () => {
-            startDist = 0;
-            isPanning = false;
-        });
+        if ('ontouchstart' in window) {
+            shield.style.display = 'none';
+            iframe.style.pointerEvents = 'auto';
+        } else {
+            iframe.style.pointerEvents = 'none';
+            shield.style.display = 'block';
+            shield.addEventListener('click', (e) => {
+                iframe.style.pointerEvents = 'auto';
+                setTimeout(() => { iframe.style.pointerEvents = 'none'; }, 1000);
+            });
+        }
 
-        adjustZoom();
+        window.addEventListener('wheel', (e) => {
+            window.scrollBy({ top: e.deltaY, behavior: 'auto' });
+        }, { passive: true });
     </script>
+    <script data-goatcounter="https://goatcounter.com"
+        async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

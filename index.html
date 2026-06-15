@@ -81,31 +81,29 @@
             z-index: 200;
             display: none;
         }
-        .info-box {
-            background-color: #404040;
-            border: 1px solid #00b0f0;
-            color: #ffc000;
-            font-family: sans-serif;
-            font-size: 16px;
-            line-height: 1.6;
-            padding: 24px;
-            width: 60%;
-            box-sizing: border-box;
-            border-radius: 4px;
-            text-align: center;
+        .gif-box {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            width: 80%;
+            box-sizing: border-box;
+            border-radius: 4px;
+            text-align: center;
             z-index: 201;
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
             display: none;
         }
+        .gif-box img {
+            width: 100%;
+            border-radius: 4px;
+            display: block;
+        }
         .close-btn {
             display: inline-block;
-            margin-top: 20px;
+            margin-top: 12px;
             padding: 8px 24px;
-            background-color: transparent;
+            background-color: #404040;
             border: 1px solid #00b0f0;
             color: #00b0f0;
             font-family: sans-serif;
@@ -126,8 +124,8 @@
     </div>
 
     <div class="overlay" id="overlay"></div>
-    <div class="info-box" id="infoBox">
-        Välkommen till interntipset för fotbolls-vm 2026. Här kan du följa din ranking i tipset. Det är 81 deltagare. Deltagare 82 utgör ett snitt av samtliga deltagares tips, och är markerad med röd färg. Leta upp din tipsrad, om den avviker från din inlämnade rad skicka ett sms till 0701749123. Lycka till.
+    <div class="gif-box" id="gifBox">
+        <img src="./yes.gif" alt="">
         <br>
         <button class="close-btn" id="closeBtn">Stäng</button>
     </div>
@@ -143,8 +141,8 @@
         </div>
     </div>
     <script>
-        // ── Ändra till true för att visa informationsrutan ──
-        const SHOW_INFOBOX = false;
+        // ── Ändra till true för att visa gif-rutan ──
+        const SHOW_GIF = false;
 
         const IFRAME_W = 1600;
         const IFRAME_H = 2366;
@@ -155,12 +153,12 @@
         const iframe   = document.getElementById('excel-iframe');
         const loader   = document.getElementById('loader');
         const overlay  = document.getElementById('overlay');
-        const infoBox  = document.getElementById('infoBox');
+        const gifBox   = document.getElementById('gifBox');
         const closeBtn = document.getElementById('closeBtn');
 
-        if (SHOW_INFOBOX) {
+        if (SHOW_GIF) {
             overlay.style.display = 'block';
-            infoBox.style.display = 'block';
+            gifBox.style.display = 'block';
         }
 
         iframe.addEventListener('load', () => {
@@ -173,11 +171,11 @@
         function closeOverlay() {
             overlay.style.transition = 'opacity 0.3s ease';
             overlay.style.opacity = '0';
-            infoBox.style.transition = 'opacity 0.3s ease';
-            infoBox.style.opacity = '0';
+            gifBox.style.transition = 'opacity 0.3s ease';
+            gifBox.style.opacity = '0';
             setTimeout(() => {
                 overlay.style.display = 'none';
-                infoBox.style.display = 'none';
+                gifBox.style.display = 'none';
             }, 300);
         }
 

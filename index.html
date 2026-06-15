@@ -10,7 +10,246 @@
             padding: 0;
             width: 100%;
             height: 100%;
+            overflow: auto;<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.09, user-scalable=yes">
+    <title>Fotbolls-VM 2026 - Interntips</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
             overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            background-color: #404040;
+        }
+        .wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            background-color: #404040;
+        }
+        .iframe-scaler {
+            width: 1600px;
+            height: 2366px;
+            transform-origin: top center;
+            position: relative;
+            flex-shrink: 0;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            clip-path: inset(4px 39px 120px 3px);
+        }
+        .touch-shield {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            background: transparent;
+            display: none;
+        }
+        .loader-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: sans-serif;
+            color: #00b0f0;
+            z-index: 100;
+            transition: opacity 0.3s ease;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border-left-color: #00b0f0;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: transparent;
+            z-index: 200;
+            display: none;
+        }
+        .gif-box {
+            position: fixed;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            max-width: 300px;
+            box-sizing: border-box;
+            border-radius: 4px;
+            text-align: center;
+            z-index: 201;
+            display: none;
+        }
+        .gif-box img {
+            width: 100%;
+            border-radius: 4px;
+            display: block;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+        }
+        .close-btn {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 8px 24px;
+            background-color: #404040;
+            border: 1px solid #00b0f0;
+            color: #00b0f0;
+            font-family: sans-serif;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+        }
+        .close-btn:hover {
+            background-color: #00b0f0;
+            color: #404040;
+        }
+    </style>
+</head>
+<body>
+    <div class="loader-container" id="loader">
+        <div class="spinner"></div>
+        <div>Hämtar statistik...</div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="gif-box" id="gifBox">
+        <img src="./yes.gif" alt="">
+        <br>
+        <button class="close-btn" id="closeBtn">Stäng</button>
+    </div>
+
+    <div class="wrapper" id="wrapper">
+        <div class="iframe-scaler" id="scaler">
+            <div class="touch-shield" id="shield"></div>
+            <iframe
+                id="excel-iframe"
+                src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='LIVE'!B3%3ACD120&wdHideGridlines=True&wdHideHeaders=True&wdInConfigurator=True&nav=1"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups">
+            </iframe>
+        </div>
+    </div>
+    <script>
+        // ── Ändra till true för att visa gif-rutan ──
+        const SHOW_GIF = true;
+
+        const IFRAME_W = 1600;
+        const IFRAME_H = 2366;
+        const DESKTOP_BREAKPOINT = 1280;
+        const scaler   = document.getElementById('scaler');
+        const wrapper  = document.getElementById('wrapper');
+        const shield   = document.getElementById('shield');
+        const iframe   = document.getElementById('excel-iframe');
+        const loader   = document.getElementById('loader');
+        const overlay  = document.getElementById('overlay');
+        const gifBox   = document.getElementById('gifBox');
+        const closeBtn = document.getElementById('closeBtn');
+
+        if (SHOW_GIF) {
+            overlay.style.display = 'block';
+            gifBox.style.display = 'block';
+        }
+
+        iframe.addEventListener('load', () => {
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => { loader.style.display = 'none'; }, 300);
+            }, 3000);
+        });
+
+        function closeOverlay() {
+            overlay.style.transition = 'opacity 0.3s ease';
+            overlay.style.opacity = '0';
+            gifBox.style.transition = 'opacity 0.3s ease';
+            gifBox.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                gifBox.style.display = 'none';
+            }, 300);
+        }
+
+        overlay.addEventListener('click', closeOverlay);
+
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeOverlay();
+        });
+
+        function applyScale() {
+            const vw = document.documentElement.clientWidth;
+            if (vw >= DESKTOP_BREAKPOINT) {
+                scaler.style.width = '1600px';
+                scaler.style.height = '2366px';
+                scaler.style.marginLeft = '0';
+                scaler.style.marginTop = '0';
+                const scale = Math.min(1, vw / IFRAME_W);
+                scaler.style.transform = `scale(${scale})`;
+                wrapper.style.height = (IFRAME_H * scale) + 'px';
+                wrapper.style.justifyContent = 'center';
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.style.clipPath = 'inset(4px 34px 360px 3px)';
+            } else {
+                scaler.style.width = '100vw';
+                scaler.style.height = 'calc(100vh + 140px)';
+                scaler.style.transform = 'none';
+                scaler.style.marginLeft = '-2px';
+                scaler.style.marginTop = '-2px';
+                wrapper.style.height = 'calc(100vh + 140px)';
+                wrapper.style.justifyContent = 'flex-start';
+                iframe.style.width = '100vw';
+                iframe.style.height = 'calc(100vh + 140px)';
+                iframe.style.clipPath = 'none';
+            }
+        }
+        applyScale();
+        window.addEventListener('resize', applyScale);
+
+        if ('ontouchstart' in window) {
+            shield.style.display = 'none';
+            iframe.style.pointerEvents = 'auto';
+        } else {
+            iframe.style.pointerEvents = 'none';
+            shield.style.display = 'block';
+            shield.addEventListener('click', (e) => {
+                iframe.style.pointerEvents = 'auto';
+                setTimeout(() => { iframe.style.pointerEvents = 'none'; }, 1000);
+            });
+        }
+
+        window.addEventListener('wheel', (e) => {
+            window.scrollBy({ top: e.deltaY, behavior: 'auto' });
+        }, { passive: true });
+    </script>
+    <script data-goatcounter="https://midtbank.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
             -webkit-overflow-scrolling: touch;
             background-color: #404040;
         }
@@ -96,10 +335,12 @@
             display: none;
         }
         .gif-box img {
-            width: 100%;
-            border-radius: 4px;
-            display: block;
-        }
+    width: 100%;
+    border-radius: 4px;
+    display: block;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+    border: 1px solid #00b0f0;
+}
         .close-btn {
             display: inline-block;
             margin-top: 12px;

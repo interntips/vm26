@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.00, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.09, user-scalable=yes">
     <title>Fotbolls-VM 2026 - Interntips</title>
     <style>
         html, body {
@@ -79,6 +79,7 @@
             height: 100vh;
             background: transparent;
             z-index: 200;
+            display: none;
         }
         .info-box {
             background-color: #404040;
@@ -98,6 +99,7 @@
             transform: translate(-50%, -50%);
             z-index: 201;
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+            display: none;
         }
         .close-btn {
             display: inline-block;
@@ -135,12 +137,15 @@
             <div class="touch-shield" id="shield"></div>
             <iframe
                 id="excel-iframe"
-                src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='LIVE'!B3%3ACB116&wdHideGridlines=True&wdHideHeaders=True&wdInConfigurator=True&nav=1"
+                src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='LIVE'!B3%3ACD120&wdHideGridlines=True&wdHideHeaders=True&wdInConfigurator=True&nav=1"
                 sandbox="allow-scripts allow-same-origin allow-forms allow-popups">
             </iframe>
         </div>
     </div>
     <script>
+        // ── Ändra till true för att visa informationsrutan ──
+        const SHOW_INFOBOX = false;
+
         const IFRAME_W = 1600;
         const IFRAME_H = 2366;
         const DESKTOP_BREAKPOINT = 1280;
@@ -152,6 +157,11 @@
         const overlay  = document.getElementById('overlay');
         const infoBox  = document.getElementById('infoBox');
         const closeBtn = document.getElementById('closeBtn');
+
+        if (SHOW_INFOBOX) {
+            overlay.style.display = 'block';
+            infoBox.style.display = 'block';
+        }
 
         iframe.addEventListener('load', () => {
             setTimeout(() => {
@@ -183,6 +193,8 @@
             if (vw >= DESKTOP_BREAKPOINT) {
                 scaler.style.width = '1600px';
                 scaler.style.height = '2366px';
+                scaler.style.marginLeft = '0';
+                scaler.style.marginTop = '0';
                 const scale = Math.min(1, vw / IFRAME_W);
                 scaler.style.transform = `scale(${scale})`;
                 wrapper.style.height = (IFRAME_H * scale) + 'px';
@@ -194,6 +206,8 @@
                 scaler.style.width = '100vw';
                 scaler.style.height = 'calc(100vh + 140px)';
                 scaler.style.transform = 'none';
+                scaler.style.marginLeft = '-2px';
+                scaler.style.marginTop = '-2px';
                 wrapper.style.height = 'calc(100vh + 140px)';
                 wrapper.style.justifyContent = 'flex-start';
                 iframe.style.width = '100vw';
@@ -221,6 +235,6 @@
         }, { passive: true });
     </script>
     <script data-goatcounter="https://midtbank.goatcounter.com/count"
-    async src="//gc.zgo.at/count.js"></script>
+        async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

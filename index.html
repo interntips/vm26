@@ -145,7 +145,6 @@
         </div>
     </div>
     <script>
-        // ── Ändra till true för att visa gif-rutan ──
         const SHOW_GIF = false;
 
         const IFRAME_W = 1600;
@@ -160,19 +159,11 @@
         const gifBox   = document.getElementById('gifBox');
         const closeBtn = document.getElementById('closeBtn');
 
+        // Visa alltid overlay, GIF bara om SHOW_GIF = true
+        overlay.style.display = 'block';
         if (SHOW_GIF) {
-            overlay.style.display = 'block';
-if (SHOW_GIF) {
-    gifBox.style.display = 'block';
-}
-
-       iframe.addEventListener('load', () => {
-    setTimeout(() => {
-        loader.style.opacity = '0';
-        setTimeout(() => { loader.style.display = 'none'; }, 300);
-        closeOverlay();
-    }, 3000);
-});
+            gifBox.style.display = 'block';
+        }
 
         function closeOverlay() {
             overlay.style.transition = 'opacity 0.3s ease';
@@ -184,6 +175,14 @@ if (SHOW_GIF) {
                 gifBox.style.display = 'none';
             }, 300);
         }
+
+        iframe.addEventListener('load', () => {
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => { loader.style.display = 'none'; }, 300);
+                closeOverlay();
+            }, 3000);
+        });
 
         overlay.addEventListener('click', closeOverlay);
 
@@ -210,8 +209,8 @@ if (SHOW_GIF) {
                 scaler.style.width = '100vw';
                 scaler.style.height = 'calc(100vh + 140px)';
                 scaler.style.transform = 'none';
-                scaler.style.marginLeft = '-2px';
-                scaler.style.marginTop = '-2px';
+                scaler.style.marginLeft = '0';
+                scaler.style.marginTop = '0';
                 wrapper.style.height = 'calc(100vh + 140px)';
                 wrapper.style.justifyContent = 'flex-start';
                 iframe.style.width = '100vw';

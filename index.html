@@ -162,15 +162,17 @@
 
         if (SHOW_GIF) {
             overlay.style.display = 'block';
-            gifBox.style.display = 'block';
-        }
+if (SHOW_GIF) {
+    gifBox.style.display = 'block';
+}
 
-        iframe.addEventListener('load', () => {
-            setTimeout(() => {
-                loader.style.opacity = '0';
-                setTimeout(() => { loader.style.display = 'none'; }, 300);
-            }, 3000);
-        });
+       iframe.addEventListener('load', () => {
+    setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => { loader.style.display = 'none'; }, 300);
+        closeOverlay();
+    }, 3000);
+});
 
         function closeOverlay() {
             overlay.style.transition = 'opacity 0.3s ease';

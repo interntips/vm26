@@ -139,13 +139,13 @@
             <div class="touch-shield" id="shield"></div>
             <iframe
                 id="excel-iframe"
-                src="https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='LIVE'!B3%3ACD120&wdHideGridlines=True&wdHideHeaders=True&wdInConfigurator=True&nav=1"
                 sandbox="allow-scripts allow-same-origin allow-forms allow-popups">
             </iframe>
         </div>
     </div>
     <script>
         const SHOW_GIF = false;
+        const IFRAME_SRC = "https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='LIVE'!B3%3ACD120&wdHideGridlines=True&wdHideHeaders=True&wdInConfigurator=True&nav=1";
 
         const IFRAME_W = 1600;
         const IFRAME_H = 2366;
@@ -159,21 +159,12 @@
         const gifBox   = document.getElementById('gifBox');
         const closeBtn = document.getElementById('closeBtn');
 
-        // Lås scroll helt
-        document.body.style.overflow = 'hidden';
-        document.documentElement.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.width = '100%';
         overlay.style.display = 'block';
         if (SHOW_GIF) {
             gifBox.style.display = 'block';
         }
 
         function closeOverlay() {
-            document.body.style.overflow = 'auto';
-            document.documentElement.style.overflow = 'auto';
-            document.body.style.position = '';
-            document.body.style.width = '';
             overlay.style.transition = 'opacity 0.3s ease';
             overlay.style.opacity = '0';
             gifBox.style.transition = 'opacity 0.3s ease';
@@ -226,7 +217,10 @@
                 iframe.style.clipPath = 'none';
             }
         }
+
+        // Kör applyScale först, ladda sedan iframen
         applyScale();
+        iframe.src = IFRAME_SRC;
         window.addEventListener('resize', applyScale);
 
         if ('ontouchstart' in window) {

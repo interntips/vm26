@@ -48,8 +48,8 @@
         }
         .loader-container {
             position: fixed;
-            top: 50%;
-            left: 50%;
+            top: 50vh;
+            left: 50vw;
             transform: translate(-50%, -50%);
             display: flex;
             flex-direction: column;
@@ -78,7 +78,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(64, 64, 64, 0.95);
+            background: #404040;
             z-index: 200;
             display: none;
         }
@@ -159,9 +159,11 @@
         const gifBox   = document.getElementById('gifBox');
         const closeBtn = document.getElementById('closeBtn');
 
-        // Lås scroll och visa overlay
+        // Lås scroll helt
         document.body.style.overflow = 'hidden';
         document.documentElement.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
         overlay.style.display = 'block';
         if (SHOW_GIF) {
             gifBox.style.display = 'block';
@@ -170,6 +172,8 @@
         function closeOverlay() {
             document.body.style.overflow = 'auto';
             document.documentElement.style.overflow = 'auto';
+            document.body.style.position = '';
+            document.body.style.width = '';
             overlay.style.transition = 'opacity 0.3s ease';
             overlay.style.opacity = '0';
             gifBox.style.transition = 'opacity 0.3s ease';

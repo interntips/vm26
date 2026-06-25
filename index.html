@@ -35,6 +35,7 @@
             border: none;
             display: block;
             clip-path: inset(4px 39px 120px 3px);
+            visibility: hidden;
         }
         .touch-shield {
             position: absolute;
@@ -80,7 +81,7 @@
             height: 100vh;
             background: #404040;
             z-index: 200;
-            display: none;
+            display: block;
         }
         .gif-box {
             position: fixed;
@@ -159,12 +160,12 @@
         const gifBox   = document.getElementById('gifBox');
         const closeBtn = document.getElementById('closeBtn');
 
-        overlay.style.display = 'block';
         if (SHOW_GIF) {
             gifBox.style.display = 'block';
         }
 
         function closeOverlay() {
+            iframe.style.visibility = 'visible';
             overlay.style.transition = 'opacity 0.3s ease';
             overlay.style.opacity = '0';
             gifBox.style.transition = 'opacity 0.3s ease';
@@ -218,7 +219,6 @@
             }
         }
 
-        // Kör applyScale först, ladda sedan iframen
         applyScale();
         iframe.src = IFRAME_SRC;
         window.addEventListener('resize', applyScale);

@@ -83,6 +83,22 @@
             z-index: 200;
             display: block;
         }
+        .results-box {
+            position: fixed;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid #00b0f0;
+            background-color: #404040;
+            color: #ffc000;
+            font-family: sans-serif;
+            padding: 16px 24px;
+            border-radius: 4px;
+            text-align: center;
+            z-index: 201;
+            display: none;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+        }
         .gif-box {
             position: fixed;
             top: 45%;
@@ -129,6 +145,34 @@
     </div>
 
     <div class="overlay" id="overlay"></div>
+
+    <div class="results-box" id="resultsBox">
+        <div style="color: white; margin-bottom: 12px;">Nu är det över. Grattis till</div>
+        <table style="border-collapse: collapse; margin: 0 auto;">
+            <tr>
+                <td style="padding: 4px 12px; color: white;">1</td>
+                <td style="padding: 4px 12px; color: #00b0f0;">194</td>
+                <td style="padding: 4px 12px; color: #ffc000;">49</td>
+                <td style="padding: 4px 12px; color: white;">Christian</td>
+                <td style="padding: 4px 12px; color: white;">68,1 %</td>
+            </tr>
+            <tr>
+                <td style="padding: 4px 12px; color: white;">2</td>
+                <td style="padding: 4px 12px; color: #00b0f0;">197</td>
+                <td style="padding: 4px 12px; color: #ffc000;">48</td>
+                <td style="padding: 4px 12px; color: white;">Sigge</td>
+                <td style="padding: 4px 12px; color: white;">66,7 %</td>
+            </tr>
+            <tr>
+                <td style="padding: 4px 12px; color: white;">3</td>
+                <td style="padding: 4px 12px; color: #00b0f0;">202</td>
+                <td style="padding: 4px 12px; color: #ffc000;">47</td>
+                <td style="padding: 4px 12px; color: white;">Johan</td>
+                <td style="padding: 4px 12px; color: white;">65,3 %</td>
+            </tr>
+        </table>
+    </div>
+
     <div class="gif-box" id="gifBox">
         <img src="./yes.gif" alt="">
         <br>
@@ -146,22 +190,27 @@
     </div>
     <script>
         const SHOW_GIF = false;
+        const SHOW_RESULTS = false;
         const IFRAME_SRC = "https://1drv.ms/x/c/e8830cf447bdf3d5/IQRCu4LbUSNUT6SOXII_dut2AeY16NyzBwAVM06qUXYjOrc?em=2&wdAllowInteractivity=True&Item='LIVE'!B3%3ACD120&wdHideGridlines=True&wdHideHeaders=True&wdInConfigurator=True&nav=1";
 
         const IFRAME_W = 1600;
         const IFRAME_H = 2366;
         const DESKTOP_BREAKPOINT = 1280;
-        const scaler   = document.getElementById('scaler');
-        const wrapper  = document.getElementById('wrapper');
-        const shield   = document.getElementById('shield');
-        const iframe   = document.getElementById('excel-iframe');
-        const loader   = document.getElementById('loader');
-        const overlay  = document.getElementById('overlay');
-        const gifBox   = document.getElementById('gifBox');
-        const closeBtn = document.getElementById('closeBtn');
+        const scaler    = document.getElementById('scaler');
+        const wrapper   = document.getElementById('wrapper');
+        const shield    = document.getElementById('shield');
+        const iframe    = document.getElementById('excel-iframe');
+        const loader    = document.getElementById('loader');
+        const overlay   = document.getElementById('overlay');
+        const gifBox    = document.getElementById('gifBox');
+        const resultsBox = document.getElementById('resultsBox');
+        const closeBtn  = document.getElementById('closeBtn');
 
         if (SHOW_GIF) {
             gifBox.style.display = 'block';
+        }
+        if (SHOW_RESULTS) {
+            resultsBox.style.display = 'block';
         }
 
         function closeOverlay() {
@@ -170,10 +219,13 @@
             overlay.style.opacity = '0';
             gifBox.style.transition = 'opacity 0.3s ease';
             gifBox.style.opacity = '0';
+            resultsBox.style.transition = 'opacity 0.3s ease';
+            resultsBox.style.opacity = '0';
             loader.style.opacity = '0';
             setTimeout(() => {
                 overlay.style.display = 'none';
                 gifBox.style.display = 'none';
+                resultsBox.style.display = 'none';
                 loader.style.display = 'none';
             }, 300);
         }
